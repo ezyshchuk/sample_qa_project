@@ -1,0 +1,1 @@
+# Sample app package for Copilot Agent Mode QA exercises.
