@@ -1,42 +1,54 @@
+import logging
+
 import pytest
 
 from app.calculator import add, divide, total
 
 
-def test_addition_basic():
-    r = add(1, 2)
-    assert r.value == 3
-    assert r.message == "ok"
+logger = logging.getLogger(__name__)
 
 
-def test_addition_more_cases():
-    r = add(0, 0)
-    assert r.value == 0
-
-    r = add(-1, 1)
-    assert r.value == 0
-
-    r = add(2.5, 2.5)
-    assert r.value == 5.0
+@pytest.mark.parametrize(
+    "a,b,expected",
+    [
+        (1, 2, 3),
+        (0, 0, 0),
+        (-1, 1, 0),
+        (2.5, 2.5, 5.0),
+    ],
+)
+def test_addition_cases(a, b, expected):
+    logger.info("Adding %s and %s", a, b)
+    result = add(a, b)
+    logger.info("Validating add result")
+    assert result.value == expected
+    assert result.message == "ok"
 
 
 def test_divide_ok():
-    r = divide(10, 2)
-    assert r.value == 5
-    assert r.message == "ok"
+    logger.info("Dividing %s by %s", 10, 2)
+    result = divide(10, 2)
+    logger.info("Validating divide result")
+    assert result.value == 5
+    assert result.message == "ok"
 
 
 def test_divide_by_zero_raises():
-    with pytest.raises(Exception) as e:
+    logger.info("Validating divide by zero error path")
+    with pytest.raises(ZeroDivisionError, match="b must not be zero") as exc_info:
         divide(1, 0)
-    assert "zero" in str(e.value).lower()
+    assert str(exc_info.value) == "b must not be zero"
 
 
-def test_total_list():
-    items = [1, 2, 3]
-    t = total(items)
-    assert t == 6.0
-
-    items = [0.1, 0.2, 0.3]
-    t = total(items)
-    assert round(t, 2) == 0.6
+@pytest.mark.parametrize(
+    "items,expected",
+    [
+        ([1, 2, 3], 6.0),
+        ([0.1, 0.2, 0.3], 0.6),
+    ],
+)
+def test_total_list(items, expected):
+    logger.info("Summing items: %s", items)
+    result = total(items)
+    logger.info("Validating total result")
+    assert result == pytest.approx(expected)
