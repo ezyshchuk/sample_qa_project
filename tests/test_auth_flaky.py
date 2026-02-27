@@ -44,4 +44,8 @@ def test_login_token_is_stable_for_same_credentials(demo_user):
     logger.info("action second login attempt username=%s", "alice")
     t2 = login(demo_user, "alice", "wonderland")
     logger.info("result second token token=%s", _mask_token(t2))
-    assert t1 == t2  # intentionally wrong
+    assert isinstance(t1, str)
+    assert isinstance(t2, str)
+    assert len(t1) > 0
+    assert len(t2) > 0
+    assert t1 != t2
